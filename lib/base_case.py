@@ -1,6 +1,7 @@
 import json
 
 from requests import Response
+from datetime import datetime
 
 class BaseCase:
     def get_cookie (self, response: Response, cookie_name):
@@ -21,4 +22,37 @@ class BaseCase:
 
         return responce_as_dict[name]
 
+    def prepare_registration_data (self, email=None):
+        if email == None:
+            base_part = "learnqa"
+            domain = "example.com"
+            random_part = datetime.now().strftime("%m%d%Y%H%M%S")
+            email = f"{base_part}{random_part}@{domain}"
 
+        return {
+            'password': '123',
+            'username': 'learnqa',
+            'firstName': 'learnqa',
+            'lastName': 'learnqa',
+            'email': email
+        }
+
+    def prepare_registration_data_username (self, username=None, email=None):
+        if email == None:
+            base_part = "learnqa"
+            domain = "example.com"
+            random_part = datetime.now().strftime("%m%d%Y%H%M%S")
+            email = f"{base_part}{random_part}@{domain}"
+
+        return {
+            'password': '123',
+            'username': username,
+            'firstName': 'learnqa',
+            'lastName': 'learnqa',
+            'email': email
+        }
+
+    def k_v_data_items(self, my_dict):
+        for key, value in my_dict.items():
+            if value is None:
+                return key
