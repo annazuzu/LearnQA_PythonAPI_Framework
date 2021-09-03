@@ -12,7 +12,22 @@ class Assertions:
             assert False, f"Responce is not JSON format. Responce text is '{response.text}'"
 
         assert name in responce_as_dict, f"Responce JSON doesn't have key '{name}'"
-        assert responce_as_dict[name] == expected_value, error_message
+
+        value = responce_as_dict[name]
+
+        if value == "email":
+            assert response.content.decode(
+                "utf-8") == "Invalid email format", f"Unexpected response content {response.content}"
+        elif len(value) > 250:
+            assert response.content.decode(
+                "utf-8") == f"The value of '{value}' field is too long", f"Unexpected response content {response.content}"
+        elif len(value) < 10:
+            assert response.content.decode(
+                "utf-8") == f"The value of '{value}' field is too short", f"Unexpected response content {response.content}"
+
+        assert value == expected_value, error_message
+
+
 
     @staticmethod
     def assert_json_has_key(response: Response, name):
