@@ -1,7 +1,7 @@
 import pytest
-import requests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
+from lib.my_requests import MyRequests
 
 
 class TestUserAuth(BaseCase):
@@ -13,7 +13,7 @@ class TestUserAuth(BaseCase):
         }
 
         # Первый запрос:
-        responce1 = requests.post("https://playground.learnqa.ru/api/user/login", data=data)
+        responce1 = MyRequests.post("/user/login", data=data)
 
         self.auth_sid = self.get_cookie(responce1, "auth_sid")
         self.token = self.get_header(responce1, "x-csrf-token")
@@ -23,8 +23,8 @@ class TestUserAuth(BaseCase):
 
         # Второй запрос:
 
-        responce2 = requests.get(
-            "https://playground.learnqa.ru/api/user/auth",
+        responce2 = MyRequests.get(
+            "/user/auth",
             headers={"x-csrf-token": self.token},
             cookies={"auth_sid": self.auth_sid}
         )
@@ -45,14 +45,14 @@ class TestUserAuth(BaseCase):
     def test_negative_auth_check(self, condition):
 
         if condition == "no_cookie":
-            responce2 = requests.get(
-                "https://playground.learnqa.ru/api/user/auth",
+            responce2 = MyRequests.get(
+                "/user/auth",
                 headers={"x-csrf-token": self.token},
 
             )
         else:
-            responce2 = requests.get(
-                "https://playground.learnqa.ru/api/user/auth",
+            responce2 = MyRequests.get(
+                "/user/auth",
                 cookies={"auth_sid": self.auth_sid},
             )
 

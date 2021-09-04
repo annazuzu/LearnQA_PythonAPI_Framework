@@ -1,8 +1,7 @@
-import json
 import pytest
-import requests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
+from lib.my_requests import MyRequests
 
 
 class TestUserRegister(BaseCase):
@@ -10,7 +9,7 @@ class TestUserRegister(BaseCase):
     def test_create_user_successfully(self):
         data = self.prepare_registration_data()
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_code_status(response, 200)
         Assertions.assert_json_has_key(response, "id")
@@ -19,7 +18,7 @@ class TestUserRegister(BaseCase):
         email = 'vinkotov@example.com'
         data = self.prepare_registration_data(email)
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_code_status(response, 400)
         assert response.content.decode(
@@ -28,27 +27,30 @@ class TestUserRegister(BaseCase):
     def test_create_user_with_email_without_a(self):
         data = self.prepare_registration_data('annaexample.com')
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_code_status(response, 400)
         Assertions.assert_json_value_by_name(response, "email", data["email"], "This string is not email")
 
     def test_create_user_with_short_name(self):
-        data = self.prepare_registration_data_username('1')
+        short_uname = '1'
+        data = self.prepare_registration_data_username(short_uname)
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_code_status(response, 400)
-        Assertions.assert_json_value_by_name(response, "username", data['username'], "This username is not correct")
+        Assertions.assert_too_long_or_short_name(response, "username", short_uname, "This username have more than 1 symbol")
 
     def test_create_user_with_long_name(self):
-        data = self.prepare_registration_data_username(
-            'XMwbqKozlpFOtWKTMksTsQRRpRLnHrwzeitwyLXngrAZFJucvVRgiMOjdWEZsURWAuMOOvojDvPAlQajjJxgknGNxCujbRqdGbaneHynFXgNfawMHnYjJeNIPrfszSkQRWGZhMynBgwquCwNSjzCxputlKdSxtOvCUzjmUkvyeHZPaNFzomFhKqyCAgYpdsezDthwpHvIrPoDqJuhnZTCQzixenpUkimmsuFcsvoJADeyCzxzYeKekRqiqp')
+        long_uname = 'XMwbqKozlpFOtWKTMksTsQRRpRLnHrwzeitwyLXngrAZFJucvVRgiMOjdWEZsURWAuMOOvojDvPAlQajjJxgknGNxCujbRqd' + \
+                     'GbaneHynFXgNfawMHnYjJeNIPrfszSkQRWGZhMynBgwquCwNSjzCxputlKdSxtOvCUzjmUkvyeHZPaNFzomFhKqyCAgYpdsez'+ \
+                     'DthwpHvIrPoDqJuhnZTCQzixenpUkimmsuFcsvoJADeyCzxzYeKekRqiqp'
+        data = self.prepare_registration_data_username(long_uname)
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_code_status(response, 400)
-        Assertions.assert_json_value_by_name(response, "username", data['username'], "This username is not correct")
+        Assertions.assert_too_long_or_short_name(response, "username", long_uname, "This username have less than 250 symbols")
 
     testdata = [
         (None, 'learnqa', 'learnqa', 'learnqa', 'anna@example.com'),
@@ -68,7 +70,7 @@ class TestUserRegister(BaseCase):
             'email': email
         }
 
-        responce = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        responce = MyRequests.post("/user/", data=data)
 
         missing_param = self.k_v_data_items(data)
 
@@ -87,7 +89,7 @@ class TestUserRegister(BaseCase):
             'email': 'anna@example.com'
         }
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         missing_param = self.k_v_data_items(data)
 
