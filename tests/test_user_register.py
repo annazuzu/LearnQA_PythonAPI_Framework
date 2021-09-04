@@ -75,8 +75,7 @@ class TestUserRegister(BaseCase):
         missing_param = self.k_v_data_items(data)
 
         Assertions.assert_code_status(responce, 400)
-        assert responce.content.decode(
-            "utf-8") == f"The following required params are missed: {missing_param}", f"Unexpected responce content {responce.content}"
+        Assertions.assert_json_value_by_name(responce, missing_param, data[missing_param], f"Field '{missing_param}' is not None and have value {data[missing_param]}")
 
     # Метод для теста, не обращать внимание:
 

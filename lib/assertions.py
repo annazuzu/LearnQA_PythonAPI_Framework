@@ -6,8 +6,11 @@ class Assertions:
 
     @staticmethod
     def assert_json_value_by_name(response: Response, name, expected_value=None, error_message=None):
-
-        if name == "email":
+        if expected_value is None:
+            assert response.content.decode(
+                "utf-8") == f"The following required params are missed: {name}", f"Unexpected responce content {response.content}"
+            return
+        elif name == "email":
             assert response.content.decode(
                 "utf-8") == "Invalid email format", f"Unexpected response content {response.content}"
         else:
