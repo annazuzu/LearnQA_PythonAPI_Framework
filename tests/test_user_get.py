@@ -1,15 +1,19 @@
+import allure
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 from lib.my_requests import MyRequests
 
 
+@allure.epic("Requesting another user's data")
 class TestUserGet(BaseCase):
+    @allure.description("Неавторизованный запрос на данные. ОР: в ответе только 'username'")
     def test_get_user_details_not_auth(self):
         responce = MyRequests.get("/user/2")
         Assertions.assert_json_has_key(responce, "username")
-        Assertions.assert_json_has_not_key(responce, "firstName")
-        Assertions.assert_json_has_not_key(responce, "lastName")
+        keys = ["firstName", "lastName"]
+        Assertions.assert_json_has_not_keys(responce, keys)
 
+    @allure.description("Авторизованный запрос на данные того пользователя, под которым мы авторизованы. ОР: в ответе все поля")
     def test_get_user_details_auth_as_same_user(self):
         data = {
             'email': 'vinkotov@example.com',
@@ -23,14 +27,15 @@ class TestUserGet(BaseCase):
         user_id_from_auth_method = self.get_json_value(responce1, "user_id")
 
         responce2 = MyRequests.get(f"/user/{user_id_from_auth_method}",
-                                 headers={"x-csrf-token": token},
-                                 cookies={"auth_sid": auth_sid}
-                                 )
+                                   headers={"x-csrf-token": token},
+                                   cookies={"auth_sid": auth_sid}
+                                   )
 
         expected_fields = ["username", "email", "firstName", "lastName"]
 
         Assertions.assert_json_has_keys(responce2, expected_fields)
 
+    @allure.description("Авторизуемся одним пользователем, пытаемся получить данные другого. ОР: в ответе только 'username'")
     def test_get_user_details_auth_as_another_user(self):
         data = {
             'email': 'vinkotov@example.com',
@@ -45,9 +50,9 @@ class TestUserGet(BaseCase):
 
         # Проверим, авторизованы ли мы?
         responce2 = MyRequests.get(f"/user/{user_id_from_auth_method}",
-                                 headers={"x-csrf-token": token},
-                                 cookies={"auth_sid": auth_sid}
-                                 )
+                                   headers={"x-csrf-token": token},
+                                   cookies={"auth_sid": auth_sid}
+                                   )
 
         expected_fields = ["username", "email", "firstName", "lastName"]
         Assertions.assert_json_has_keys(responce2, expected_fields)
