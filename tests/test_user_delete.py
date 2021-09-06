@@ -6,6 +6,7 @@ from lib.my_requests import MyRequests
 
 @allure.epic("Delete user")
 class TestUserDelete(BaseCase):
+    @allure.title("Удаление пользователя: негативный тест №1")
     @allure.description("Тест на попытку удалить пользователя по ID 2 (неудаляемый пользователь)")
     def test_user_delete_id_2(self):
         # Авторизуемся:
@@ -48,6 +49,7 @@ class TestUserDelete(BaseCase):
         Assertions.assert_json_has_key(responce4, "username")
         Assertions.assert_json_has_keys(responce4, expected_fields)
 
+    @allure.title("Удаление пользователя: позитивный тест")
     @allure.description("Создать пользователя, авторизоваться из-под него, удалить, + проверка, что он удалён")
     def test_user_create_and_delete(self):
         # 1. Создание:
@@ -105,6 +107,7 @@ class TestUserDelete(BaseCase):
         Assertions.assert_code_status(responce4, 404)
         Assertions.assert_user_not_exist(responce4, "User is exist!")
 
+    @allure.title("Удаление пользователя: негативный тест №2")
     @allure.description("Удалить пользователя, будучи авторизованным другим пользователем. ОР: пользователь не удалён")
     def test_delete_not_that_user(self):
         # 1. Создадим нового пользователя:

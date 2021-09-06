@@ -5,10 +5,11 @@ from lib.my_requests import MyRequests
 from flaky import flaky
 
 
-@flaky
 @allure.epic("Editing user's data")
 class TestUserEdit(BaseCase):
 
+    @flaky
+    @allure.title("Редактирование данных пользователя: позитивный тест")
     @allure.description(
         "Создаем пользователя и редактируем ему имя ('firstName'). ОР: пользователь создан, имя отредактировано")
     def test_edit_just_created_user(self):
@@ -62,6 +63,8 @@ class TestUserEdit(BaseCase):
         Assertions.assert_json_value_by_name(responce4, "firstName", new_name, "Wrong name of the user after edit")
 
     # Изменить данные пользователя, будучи неавторизованными:
+    @flaky
+    @allure.title("Редактирование данных пользователя: пользователь неавторизован, негативный тест №1")
     @allure.description(
         "Изменяем данные пользователя, будучи неавторизованными ('username'). ОР: 'username' не изменено")
     def test_edit_not_auth_user(self):
@@ -103,6 +106,7 @@ class TestUserEdit(BaseCase):
         # Оба запроса отработали со статус-кодом 400, имя пользователя таким способом поменять нельзя.
 
     # Изменить данные пользователя, будучи авторизованными другим пользователем:
+    @allure.title("Редактирование данных пользователя: пользователь авторизован, негативный тест №2")
     @allure.description(
         "Изменяем данные пользователя ('username'), будучи авторизованными другим пользователем. ОР: 'username' не изменено")
     def test_edit_not_that_user(self):
@@ -164,6 +168,8 @@ class TestUserEdit(BaseCase):
         # способом изменять данные тоже нельзя.
 
     # Изменить email пользователя, будучи авторизованными тем же пользователем, на новый email без символа @:
+    @flaky
+    @allure.title("Редактирование данных пользователя: негативный тест №3 на некорректные данные")
     @allure.description(
         "Изменяем email пользователя, будучи авторизованными тем же пользователем, на новый email без символа @. ОР: Email не изменен")
     def test_edit_created_user_wrong_email(self):
@@ -222,6 +228,8 @@ class TestUserEdit(BaseCase):
 
     # Изменить firstName пользователя, будучи авторизованными тем же пользователем, на очень короткое значение в один
     # символ:
+    @flaky
+    @allure.title("Редактирование данных пользователя: негативный тест №4 на некорректные данные")
     @allure.description(
         "Изменяем firstName пользователя, будучи авторизованными тем же пользователем, на значение в один символ. ОР: 'firstName' не изменен")
     def test_edit_created_user_wrong_firstname(self):

@@ -8,6 +8,7 @@ from lib.my_requests import MyRequests
 @allure.epic("User registration cases (Create user)")
 class TestUserRegister(BaseCase):
 
+    @allure.title("Создание пользователя: позитивный тест")
     @allure.description("Этот тест удачно создает пользователя по email и заполняет все обязательные поля")
     def test_create_user_successfully(self):
         data = self.prepare_registration_data()
@@ -17,6 +18,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_code_status(response, 200)
         Assertions.assert_json_has_key(response, "id")
 
+    @allure.title("Создание пользователя: негативный тест №1")
     @allure.description("Этот тест пытается создать пользователя с уже существующим email")
     def test_create_user_with_existing_email(self):
         email = 'vinkotov@example.com'
@@ -28,6 +30,7 @@ class TestUserRegister(BaseCase):
         assert response.content.decode(
             "utf-8") == f"Users with email '{email}' already exists", f"Unexpected response content {response.content}"
 
+    @allure.title("Создание пользователя: негативный тест №2")
     @allure.description("Создание пользователя с некорректным email - без символа @")
     def test_create_user_with_email_without_a(self):
         data = self.prepare_registration_data('annaexample.com')
@@ -37,6 +40,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_code_status(response, 400)
         Assertions.assert_json_value_by_name(response, "email", data["email"], "This string is not email")
 
+    @allure.title("Создание пользователя: негативный тест №3")
     @allure.description("Создание пользователя с очень коротким именем в один символ")
     def test_create_user_with_short_name(self):
         short_uname = '1'
@@ -48,6 +52,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_too_long_or_short_name(response, "username", short_uname,
                                                  "This username have more than 1 symbol")
 
+    @allure.title("Создание пользователя: негативный тест №4")
     @allure.description("Создание пользователя с очень длинным именем - длиннее 250 символов")
     def test_create_user_with_long_name(self):
         long_uname = 'XMwbqKozlpFOtWKTMksTsQRRpRLnHrwzeitwyLXngrAZFJucvVRgiMOjdWEZsURWAuMOOvojDvPAlQajjJxgknGNxCujbRqd' + \
@@ -69,7 +74,36 @@ class TestUserRegister(BaseCase):
         ('123', 'learnqa', 'learnqa', 'learnqa', None)
     ]
 
-    @allure.description("Создание пользователя без указания одного из обязательных полей (параметризованный тест)")
+    @allure.title("Создание пользователя - параметризованный тест. Тестируемые параметры: {password}, {username}, {first_name}, {last_name}, {email}")
+    @allure.description_html("""
+<h1>Создание пользователя без указания одного из обязательных полей</h1>
+<h2>Поля и их значения:</h2>
+<table style="width:100%">
+  <tr>
+    <th>Key</th>
+    <th>Value</th>
+  </tr>
+  <tr align="center">
+    <td>password</td>
+    <td>123</td>
+  </tr>
+  <tr align="center">
+    <td>username</td>
+    <td>learnqa</td>
+  </tr>
+    <tr align="center">
+    <td>firstName</td>
+    <td>learnqa</td>
+  </tr>
+    <tr align="center">
+    <td>lastName</td>
+    <td>learnqa</td>
+  </tr>
+    <tr align="center">
+    <td>email</td>
+    <td>annaexample.com</td>
+  </tr>
+</table>""")
     @pytest.mark.parametrize('password, username, first_name, last_name, email', testdata)
     def test_create_user_some_field_empty_param(self, password, username, first_name, last_name, email):
         data = {
@@ -89,7 +123,7 @@ class TestUserRegister(BaseCase):
                                              f"Field '{missing_param}' is not None and have value {data[missing_param]}")
 
     # Метод для теста, не обращать внимание:
-
+    @allure.title("Метод для теста параметризованного теста")
     @pytest.mark.skip(reason="Just for my test")
     def test_create_user_some_field_empty(self):
         data = {

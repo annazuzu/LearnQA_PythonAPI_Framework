@@ -14,12 +14,14 @@ class Environment:
 
     def __init__(self):
         try:
-            self.env = os.environ["ENV"]
+            self.env = os.environ['ENV']
+            print(os.environ.get('ENV'))
         except KeyError:
             self.env = self.DEV
 
     def get_base_url(self):
         if self.env in self.URLS:
+            print(self.URLS[self.env])
             return self.URLS[self.env]
         else:
             raise Exception(f"Unknown value of ENV variable {self.env}")
